@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot - Display Budget</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-200 flex items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3 flex flex-col h-full">
+        <!-- Budget Display -->
+        <div class="mb-4">
+            <p class="text-lg font-semibold text-blue-700">Your Budget:</p>
+            <p id="budget-display" class="text-xl font-bold p-4 rounded-lg text-center">
+                {{ budget }} BHD 
+            </p>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container bg-gray-100 p-4 rounded-lg shadow-inner flex-1 flex flex-col">
+            <div id="chat-messages" class="flex-1">
+                <!-- Chat messages will be dynamically inserted here -->
+                <div class="chat-message text-gray-800">
+                    <p class="font-semibold">Chatbot:</p>
+                    <p>Hi there! How can I assist you with your budget today?</p>
+                </div>
+            </div>
+            <div class="mt-4 flex">
+                <input type="text" id="user-input" class="flex-1 p-2 border border-blue-300 rounded-l-lg" placeholder="Type your number...">
+                <button id="send-button" class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 transition duration-200">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('send-button').addEventListener('click', function() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === '') return;
+
+            // Display the user message
+            const chatMessages = document.getElementById('chat-messages');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message text-gray-800';
+            userMessage.innerHTML = `<p class="font-semibold">You:</p><p>${userInput}</p>`;
+            chatMessages.appendChild(userMessage);
+
+            // Clear the input field
+            document.getElementById('user-input').value = '';
+
+            // Send the user message to the server
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${encodeURIComponent(userInput)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessage = document.createElement('div');
+                botMessage.className = 'chat-message text-gray-800';
+                botMessage.innerHTML = `<p class="font-semibold">Chatbot:</p><p>${data.response}</p>`;
+                chatMessages.appendChild(botMessage);
+
+                // Update the budget display
+                const budgetDisplay = document.getElementById('budget-display');
+                budgetDisplay.textContent = data.updated_budget+" BHD";
+
+                // Update the class based on budget value
+                if (parseFloat(data.updated_budget) < 0) {
+                    budgetDisplay.classList.remove('bg-green-100', 'text-green-800');
+                    budgetDisplay.classList.add('bg-red-100', 'text-red-800');
+                } else {
+                    budgetDisplay.classList.remove('bg-red-100', 'text-red-800');
+                    budgetDisplay.classList.add('bg-green-100', 'text-green-800');
+                }
+
+                // Scroll to the bottom of the chat container
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        });
+    </script>
+</body>
+</html>
