@@ -1,83 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Chatbot - Display Budget</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-200 flex items-center justify-center h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3 flex flex-col h-full">
+
+<body class="bg-gradient-to-b from-blue-200 to-blue-300 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl h-11/12 flex flex-col">
         <!-- Budget Display -->
-        <div class="mb-4">
-            <p class="text-lg font-semibold text-blue-700">Your Budget:</p>
-            <p id="budget-display" class="text-xl font-bold p-4 rounded-lg text-center">
-                {{ budget }} BHD 
+        <div class="mb-6 text-center">
+            <p class="text-2xl font-semibold text-blue-700">Your Budget:</p>
+            <p id="budget-display" class="text-3xl font-bold p-4 bg-blue-100 rounded-lg text-center mt-4">
+                {{ budget }} BHD
             </p>
         </div>
 
         <!-- Chat Interface -->
-        <div class="chat-container bg-gray-100 p-4 rounded-lg shadow-inner flex-1 flex flex-col">
-            <div id="chat-messages" class="flex-1">
-                <!-- Chat messages will be dynamically inserted here -->
-                <div class="chat-message text-gray-800">
-                    <p class="font-semibold">Chatbot:</p>
-                    <p>Hi there! How can I assist you with your budget today?</p>
+        <div class="chat-container bg-gray-50 p-6 rounded-lg shadow-inner flex-1 flex flex-col h-full">
+            <div id="chat-messages" class="flex-1 overflow-y-auto py-12">
+                <!-- Chatbot message (left-aligned) -->
+                <div class="chat-message text-gray-800 mb-4 flex justify-start">
+                    <div class="bg-blue-100 p-2 rounded-lg max-w-xs">
+                        <p class="font-semibold">Chatbot:</p>
+                        <p>Hi there! How can I assist you with your budget today?</p>
+                    </div>
+                </div>
+                <!-- User message (right-aligned) -->
+                <div class="chat-message text-gray-800 mb-4 flex justify-end">
+                    <div class="bg-green-100 p-2 rounded-lg max-w-xs">
+                        <p class="font-semibold">You:</p>
+                        <p>I need help managing my expenses.</p>
+                    </div>
                 </div>
             </div>
             <div class="mt-4 flex">
-                <input type="text" id="user-input" class="flex-1 p-2 border border-blue-300 rounded-l-lg" placeholder="Type your number...">
-                <button id="send-button" class="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-600 transition duration-200">Send</button>
+                <input type="text" id="user-input"
+                    class="flex-1 p-3 border border-blue-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Type your number...">
+                <button id="send-button"
+                    class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600 transition duration-200">Send</button>
             </div>
         </div>
     </div>
 
+
     <script>
-        document.getElementById('send-button').addEventListener('click', function() {
-            const userInput = document.getElementById('user-input').value;
-            if (userInput.trim() === '') return;
-
-            // Display the user message
+        document.getElementById('send-button').addEventListener('click', function () {
+            const userInput = document.getElementById('user-input').value.trim();
+            if (!userInput) return;
+    
             const chatMessages = document.getElementById('chat-messages');
-            const userMessage = document.createElement('div');
-            userMessage.className = 'chat-message text-gray-800';
-            userMessage.innerHTML = `<p class="font-semibold">You:</p><p>${userInput}</p>`;
-            chatMessages.appendChild(userMessage);
-
-            // Clear the input field
-            document.getElementById('user-input').value = '';
-
-            // Send the user message to the server
-            fetch('/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `message=${encodeURIComponent(userInput)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                const botMessage = document.createElement('div');
-                botMessage.className = 'chat-message text-gray-800';
-                botMessage.innerHTML = `<p class="font-semibold">Chatbot:</p><p>${data.response}</p>`;
-                chatMessages.appendChild(botMessage);
-
-                // Update the budget display
-                const budgetDisplay = document.getElementById('budget-display');
-                budgetDisplay.textContent = data.updated_budget+" BHD";
-
-                // Update the class based on budget value
-                if (parseFloat(data.updated_budget) < 0) {
-                    budgetDisplay.classList.remove('bg-green-100', 'text-green-800');
-                    budgetDisplay.classList.add('bg-red-100', 'text-red-800');
-                } else {
-                    budgetDisplay.classList.remove('bg-red-100', 'text-red-800');
-                    budgetDisplay.classList.add('bg-green-100', 'text-green-800');
+    
+        
+            function addMessage(text, className, alignRight = false) {
+                const message = document.createElement('div');
+                message.className = `chat-message text-gray-800 mb-4 flex ${alignRight ? 'justify-end' : 'justify-start'}`;
+                message.innerHTML = `
+                    <div class="${className} p-2 rounded-lg max-w-xs">
+                        <p class="font-semibold">${alignRight ? 'You' : 'Chatbot'}:</p>
+                        <p>${text}</p>
+                    </div>
+                `;
+                chatMessages.appendChild(message);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+            }
+    
+          
+            function getRandomResponse(responses) {
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+    
+          
+            const greetings = {
+                'hi': [
+                    'Hello there!',
+                    'Hi! How can I assist you today?',
+                    'Hey! What’s up?'
+                ],
+                'hello': [
+                    'Hello! How can I help you?',
+                    'Hi there!',
+                    'Greetings!'
+                ],
+                'good morning': [
+                    'Good morning! How’s your day going?',
+                    'Morning! What can I do for you today?',
+                    'Good morning! Ready for a productive day?'
+                ],
+                'good evening': [
+                    'Good evening! How can I assist you?',
+                    'Evening! How’s your day been?',
+                    'Good evening! What can I help with?'
+                ]
+            };
+    
+      
+            addMessage(userInput, 'bg-green-100', true);
+    
+    
+            const lowerCaseInput = userInput.toLowerCase();
+            let responded = false;
+    
+            for (const greeting in greetings) {
+                if (lowerCaseInput.includes(greeting)) {
+                    addMessage(getRandomResponse(greetings[greeting]), 'bg-blue-100');
+                    document.getElementById('user-input').value = '';
+                    responded = true;
+                    break;
                 }
-
-                // Scroll to the bottom of the chat container
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
+            }
+    
+            if (!responded) {
+                // Clear the input field
+                document.getElementById('user-input').value = '';
+    
+              
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `message=${encodeURIComponent(userInput)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    addMessage(data.response, 'bg-blue-100');
+                    const budgetDisplay = document.getElementById('budget-display');
+                    budgetDisplay.textContent = `${data.updated_budget} BHD`;
+                    const isNegative = parseFloat(data.updated_budget) < 0;
+                    budgetDisplay.className = `text-3xl font-bold p-4 rounded-lg text-center mt-4 ${isNegative ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
+                });
+            }
         });
     </script>
+    
+
 </body>
+
 </html>
