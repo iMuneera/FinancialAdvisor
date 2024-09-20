@@ -54,7 +54,11 @@ def update_budget():
 
 @app.route('/')
 def display():
-   
+    # Check if the old image exists and delete it
+    old_image = 'static/images/week_spending.png'
+    if os.path.exists(old_image):
+        os.remove(old_image)
+        print(f"Old graph {old_image} deleted.")
     return render_template('display.html', budget=budget)
 
 #--------------------------------------------------------------------------------------
