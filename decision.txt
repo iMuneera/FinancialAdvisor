@@ -1,0 +1,20 @@
+lipgloss - not important
+rent - important
+bills - important
+coffee - not important
+subscriptions - not important
+groceries - important
+entertainment - not important
+car insurance - important
+clothes - not important
+healthcare - important
+electricity - important
+internet - important
+gym membership - not important
+books - important
+din out - not important
+travel - important
+phone bill - important
+toiletries - important
+pet care - important
+streaming service - not important

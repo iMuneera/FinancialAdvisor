@@ -50,8 +50,8 @@ def saving_advice():
 
         print(f"Item: {item}, Same week dates: {same_week_dates}")
 
-        # Only give advice if more than 3 purchases of the same item occurred in the same week
-        if len(same_week_dates) > 3:
+        # give advice if more than 3 purchases of the same item  in the same week
+        if len(same_week_dates) >= 3:
             advice = (
                 f"<br>This week, you've bought <b>{item}</b> {len(same_week_dates)} times and spent a total of "
                 f"<span style='color: red;'>{total_spent[item]:.2f} BHD</span>.<br>"

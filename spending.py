@@ -121,7 +121,6 @@ def spending_graph():
     plt.title('Spending by Day of the Week')
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
-
     # Save the graph to the static/images directory
     plt.savefig('static/images/week_spending.png')
     plt.close()  # Close the plot to free up memory

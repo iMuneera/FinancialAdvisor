@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Chatbot - Display Budget</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gradient-to-b from-blue-200 to-blue-300 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl h-11/12 flex flex-col">
         <!-- Budget Display -->
@@ -18,14 +18,14 @@
         <!-- Chat Interface -->
         <div class="chat-container bg-gray-50 p-6 rounded-lg shadow-inner flex-1 flex flex-col h-full w-full">
             <div id="chat-messages" class="flex-1 overflow-y-auto py-12">
-                <!-- Chatbot message (left-aligned) -->
+                <!-- Chatbot message (left-side) -->
                 <div class="chat-message text-gray-800 mb-4 flex justify-start">
                     <div class="bg-blue-100 p-2 rounded-lg ">
                         <p class="font-semibold">Chatbot:</p>
                         <p>Hi there! How can I assist you with your budget today?</p>
                     </div>
                 </div>
-                <!-- User message (right-aligned) -->
+                <!-- User message (right-side) -->
                 <div class="chat-message text-gray-800 mb-4 flex justify-end">
                     <div class="bg-green-100 p-2 rounded-lg ">
                         <p class="font-semibold">You:</p>
@@ -36,13 +36,16 @@
 
             <!-- Display Weekly Spending Graph -->
             <div id="graph-container" class="hidden">
-                <img id="weekly-spending-graph"  src="\static\images\week_spending.png">
+                <img id="weekly-spending-graph" src="\static\images\week_spending.png">
             </div>
 
+            <!--input filed and sent button -->
             <div class="mt-4 flex">
                 <input type="text" id="user-input"
                     class="flex-1 p-3 border border-blue-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Type your number...">
+
+
                 <button id="send-button"
                     class="bg-blue-500 text-white p-3 rounded-r-lg hover:bg-blue-600 transition duration-200">Send</button>
             </div>
@@ -50,13 +53,17 @@
     </div>
 
     <script>
-        document.getElementById('send-button').addEventListener('click', function () {
-            const userInput = document.getElementById('user-input').value.trim();
+
+
+        //taking user input and trim it and check if it greeting before sending it  to backend 
+        document.getElementById('send-button').addEventListener('click', () => {
+            const inputField = document.getElementById('user-input');
+            const userInput = inputField.value.trim();
             if (!userInput) return;
-    
             const chatMessages = document.getElementById('chat-messages');
-    
-            function addMessage(text, className, alignRight = false) {
+
+            //{frontend} to make the user input display in the right side and the chatbot respond in the left side 
+            const addMessage = (text, className, alignRight = false) => {
                 const message = document.createElement('div');
                 message.className = `chat-message text-gray-800 mb-4 flex ${alignRight ? 'justify-end' : 'justify-start'}`;
                 message.innerHTML = `
@@ -66,83 +73,78 @@
                     </div>
                 `;
                 chatMessages.appendChild(message);
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
-            }
-    
-            function getRandomResponse(responses) {
-                return responses[Math.floor(Math.random() * responses.length)];
-            }
-    
-            const greetings = {
-                'hi': [
-                    'Hello there!',
-                    'Hi! How can I assist you today?',
-                    'Hey! What’s up?'
-                ],
-                'hello': [
-                    'Hello! How can I help you?',
-                    'Hi there!',
-                    'Greetings!'
-                ],
-                'good morning': [
-                    'Good morning! How’s your day going?',
-                    'Morning! What can I do for you today?',
-                    'Good morning! Ready for a productive day?'
-                ],
-                'good evening': [
-                    'Good evening! How can I assist you?',
-                    'Evening! How’s your day been?',
-                    'Good evening! What can I help with?'
-                ]
+                // chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
             };
-    
+
+            //-------------- pick randome respond for the greeting array  -------------------// 
+            const getRandomResponse = (responses) => responses[Math.floor(Math.random() * responses.length)];
+            //-------------- basic greeting for the user (no need to send it for backend ) -------------------// 
+            const greetings = {
+                'hi': ['Hello there!', 'Hi! How can I assist you today?', 'Hey! What’s up?'],
+                'hello': ['Hello! How can I help you?', 'Hi there!', 'Greetings!'],
+                'good morning': ['Good morning! How’s your day going?', 'Morning! What can I do for you today?', 'Good morning! Ready for a productive day?'],
+                'good evening': ['Good evening! How can I assist you?', 'Evening! How’s your day been?', 'Good evening! What can I help with?'],
+                'hey': ['Hey! How’s it going?', 'Hey there! What can I do for you?', 'Hey! Need any help today?'],
+                'good afternoon': ['Good afternoon! How’s your day so far?', 'Afternoon! What can I assist you with?', 'Good afternoon! How can I help you today?']
+            };
+
+            //-------------- {frontend} display user input in div on the right side with green bg -------------------// 
             addMessage(userInput, 'bg-green-100', true);
-    
+            //-------------- take user input in lowercase  -------------------// 
             const lowerCaseInput = userInput.toLowerCase();
-            let responded = false;
-    
-            for (const greeting in greetings) {
+
+            let responded = false;// flag for emptying the input filed 
+
+            //loop in the greeting array (greeting ,response) if the user input match one of the greeting it will display randome response 
+            for (const [greeting, responses] of Object.entries(greetings)) {
+
                 if (lowerCaseInput.includes(greeting)) {
-                    addMessage(getRandomResponse(greetings[greeting]), 'bg-blue-100');
-                    document.getElementById('user-input').value = '';
+                    //-------------- {frontend }take randome response from the array and display it in the left side as chatbot respond   -------------------// 
+                    addMessage(getRandomResponse(responses), 'bg-blue-100');
+
+                    inputField.value = '';
+                    //change the flag to true and exit the loop
                     responded = true;
+
+                    //break loop 
                     break;
                 }
             }
-    
+            // {frontend } if respond = true it will empty the input filed
             if (!responded) {
-        document.getElementById('user-input').value = '';
+                inputField.value = '';
+                //-------------- send and receive respond and display it from backend -------------------// 
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `message=${encodeURIComponent(userInput)}`
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        addMessage(data.response, 'bg-blue-100');
 
-        fetch('/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `message=${encodeURIComponent(userInput)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            addMessage(data.response, 'bg-blue-100');
-            const budgetDisplay = document.getElementById('budget-display');
-            if (data.updated_budget) {
-                budgetDisplay.textContent = `${data.updated_budget} BHD`;
-                const isNegative = parseFloat(data.updated_budget) < 0;
-                budgetDisplay.className = `text-3xl font-bold p-4 rounded-lg text-center mt-4 ${isNegative ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
-            }
+                        const budgetDisplay = document.getElementById('budget-display');
+                        if (data.updated_budget) {
+                            const isNegative = parseFloat(data.updated_budget) < 0;
+                            budgetDisplay.textContent = `${data.updated_budget} BHD`;
+                            budgetDisplay.className = `text-3xl font-bold p-4 rounded-lg text-center mt-4 ${isNegative ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
+                        }
 
-            const graphContainer = document.getElementById('graph-container');
-            const graphImage = document.getElementById('weekly-spending-graph');
-      
-            if (data.image_url) {
-                graphImage.src = data.image_url;
-                graphContainer.classList.remove('hidden');
-            } else {
-                graphContainer.classList.add('hidden'); // Hide the graph container if no image URL
+                        //-------------- to display the graph div for the weekly spending  -------------------//      
+                        const graphContainer = document.getElementById('graph-container');
+                        const graphImage = document.getElementById('weekly-spending-graph');
+                        //-------------- send and receive respond and display it from backend -------------------// 
+                        if (data.image_url) {
+                            graphImage.src = data.image_url;
+                            graphContainer.classList.remove('hidden');
+                        } else {
+                            graphContainer.classList.add('hidden');
+                        }
+                    })
+                    //-------------- recive error from the backend  and display it -------------------// 
+                    .catch(error => console.error('Error:', error));
             }
-        })
-        .catch(error => console.error('Error:', error)); // Catch any errors
-    }
-})
+        });
     </script>
-    
-    
+
 </body>
-</html>

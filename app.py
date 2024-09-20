@@ -5,13 +5,14 @@ import inflect, logging
 from spending import log_spending, clear_spending_logs, show_spending_logs,spending_graph
 from wishlist import display_wishlist, wishlist
 from saving import saving_advice
-
+from Decisiontree import decisiontree
 app = Flask(__name__)
 p = inflect.engine()
 nlp = spacy.load('en_core_web_sm')
 @app.route('/static/<path:filename>')
 def custom_static(filename):
     return send_from_directory('static', filename)
+
 
 #---------------------------------------------
 def convert_currency(amount, currency):
@@ -53,6 +54,7 @@ def update_budget():
 
 @app.route('/')
 def display():
+   
     return render_template('display.html', budget=budget)
 
 #--------------------------------------------------------------------------------------
@@ -124,7 +126,11 @@ def chat():
         return jsonify({'error': 'No message provided.'})
     
     transformed_text_str = parse_message(message)
-
+    if "need" in transformed_text_str.lower():
+        parts = transformed_text_str.split("need")
+        if len(parts) > 1:
+            user_item = parts[1].strip()  # Get the first word after "check"
+            response = decisiontree(user_item)  # Pass user_item to decisiontree
     if "wishlist" in transformed_text_str.lower():
         response = display_wishlist()
     elif "want" in transformed_text_str.lower():
@@ -135,7 +141,6 @@ def chat():
         response = show_spending_logs()
     elif "reset" in transformed_text_str.lower():
         response = reset()
-
     if "weekly spending" in transformed_text_str.lower():
         spending_graph()  # This will save the image
         image_url = '/static/images/week_spending.png'
@@ -156,6 +161,9 @@ def chat():
         'response': response,
         'image_url': image_url
     })
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
