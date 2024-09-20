@@ -6,7 +6,7 @@ import pandas as pd
 
 def show_spending_logs():
     try:
-        with open('spending_log.txt', 'r') as file:
+        with open('txt\spending_log.txt', 'r') as file:
             spending_log = file.readlines()
 
         if not spending_log:
@@ -53,7 +53,7 @@ def show_spending_logs():
 
 def clear_spending_logs():
     try:
-        with open('spending_log.txt', 'w') as file:
+        with open('txt\spending_log.txt', 'w') as file:
             file.write('')  # Clear the file
         return "Spending logs have been cleared."
     except Exception as e:
@@ -62,7 +62,7 @@ def clear_spending_logs():
 def log_spending(description, amount_bhd):
     try:
         date_str = datetime.now().strftime('%Y-%m-%d %I:%M %p')
-        with open("spending_log.txt", "a") as file:
+        with open("txt\spending_log.txt", "a") as file:
             file.write(f"{date_str} - {description} - {amount_bhd:.2f} BHD\n")
     except Exception as e:
         return f"An error occurred while logging the spending: {str(e)}"
@@ -76,7 +76,7 @@ def get_amount_class(amount_bhd):
         return 'text-gray-800'
 
 def spending_graph():
-    file_path = 'spending_log.txt'
+    file_path = 'txt\spending_log.txt'
    # Initialize a dictionary to hold totals for each day
   # Initialize a dictionary with all days of the week set to zero
     weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']

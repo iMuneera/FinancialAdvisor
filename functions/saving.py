@@ -5,7 +5,7 @@ def saving_advice():
     print("Saving advice function has been called")
     
     # Reading the spending log
-    with open('spending_log.txt', 'r') as file:
+    with open('txt\spending_log.txt', 'r') as file:
         spending_log = file.readlines()
 
     item_dates = defaultdict(list)

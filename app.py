@@ -2,10 +2,10 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 import re
 import spacy,os
 import inflect, logging
-from spending import log_spending, clear_spending_logs, show_spending_logs,spending_graph
-from wishlist import display_wishlist, wishlist
-from saving import saving_advice
-from Decisiontree import decisiontree
+from functions.spending import log_spending, clear_spending_logs, show_spending_logs,spending_graph
+from functions.wishlist import display_wishlist, wishlist
+from functions.saving import saving_advice
+from functions.Decisiontree import decisiontree
 app = Flask(__name__)
 p = inflect.engine()
 nlp = spacy.load('en_core_web_sm')

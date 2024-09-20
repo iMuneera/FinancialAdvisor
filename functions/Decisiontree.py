@@ -1,5 +1,5 @@
 def decisiontree(user_item):
-    with open('spending_log.txt', 'r') as log_file, open('decision.txt', 'r') as decision_file:
+    with open('txt\spending_log.txt', 'r') as log_file, open('txt\decision.txt', 'r') as decision_file:
         decisions = decision_file.readlines()
 
     # Create a dictionary for decisions

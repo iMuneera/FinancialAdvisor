@@ -8,7 +8,7 @@ def wishlist(transformed_text_str):
         
         if desired_item:
             date_str = datetime.now().strftime('%Y-%m-%d')
-            with open("wishlist.txt", "a") as file:
+            with open("txt\wishlist.txt", "a") as file:
                 file.write(f"{date_str} - {desired_item}\n")
             return f"'{desired_item}' added to wishlist."
         else:
@@ -18,7 +18,7 @@ def wishlist(transformed_text_str):
     
 def display_wishlist():
     try:
-        with open('wishlist.txt', 'r') as file:
+        with open('txt\wishlist.txt', 'r') as file:
             wishlist = file.readlines()
 
         if not wishlist:
