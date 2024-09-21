@@ -64,20 +64,32 @@ def display():
 #--------------------------------------------------------------------------------------
 def parse_message(message):
     doc = nlp(message)
+    tokenisedword = []
     transformed_text = []
+    message_tag = []
+    verb_count = 0
+
     for token in doc:
-        if token.pos_ == 'VERB' and token.tag_ not in ['VB', 'VBG', 'VBP', 'VBZ']:
-            transformed_text.append(token.lemma_)
-        elif token.pos_ == 'NOUN' and token.tag_ == 'NNS': 
-            singular_form = p.singular_noun(token.text)
-            if singular_form:
-                transformed_text.append(singular_form)
-            else:
-                transformed_text.append(token.text)
-        else:
-            transformed_text.append(token.text)
-    
+        tokenisedword.append(token.lemma_)
+        message_tag.append(token.pos_)
+        
+        if token.pos_ in ['ADP', 'PART']:#ex to(part) and for (adp)
+            continue
+        
+        if token.pos_ == 'VERB':
+            verb_count += 1
+            if verb_count > 1:  # Skip the second verb
+                continue
+        transformed_text.append(token.lemma_) 
+        print(f"tokenised and lemmatized message: {tokenisedword}")
+        print(f"message tag: {message_tag}")
+        print(f"sentence without ADP (adpositions) word: {transformed_text}")
     return ' '.join(transformed_text)
+
+
+
+
+
 #--------------------------------------------------------------------------------------
 def handle_budget_modification(transformed_text_str):
     global budget
@@ -146,7 +158,7 @@ def chat():
     elif "reset" in transformed_text_str.lower():
         response = reset()
     if "weekly spending" in transformed_text_str.lower():
-        spending_graph()  # This will save the image
+        spending_graph()  
         image_url = '/static/images/week_spending.png'
         response = 'Here is your weekly spending graph.'
     elif "advice" in transformed_text_str.lower():
