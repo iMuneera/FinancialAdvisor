@@ -152,11 +152,13 @@ def chat():
     elif "advice" in transformed_text_str.lower():
         response = saving_advice()
     elif "budget" in transformed_text_str.lower():
-        response = budget
+        if budget == 0:
+         response = "zero"
+        else:
+            response = budget
     if not response:
         response = handle_budget_modification(transformed_text_str)
     
-    # If response is a dictionary (like budget modification), return it as JSON
     if isinstance(response, dict):
         return jsonify(response)
     
