@@ -1,16 +1,1 @@
-2024-09-03 09:11 PM = lipgloss
-2024-09-03 09:47 PM = new watch
-2024-09-03 - books
-2024-09-04 - CDs
-2024-09-04 - games
-2024-09-13 - lipgloss
-2024-09-13 - headset
-2024-09-13 - to add apple and orange to my list
-2024-09-13 - to add apple and orange to my list
-2024-09-13 - lipgloss
-2024-09-20 - bag
-2024-09-20 - bag
-2024-09-21 - to buy a cat
-2024-09-21 - to buy lipgloss
-2024-09-21 - buy lipgloss
-2024-09-21 - lipgloss
+2024-09-22 - a bag

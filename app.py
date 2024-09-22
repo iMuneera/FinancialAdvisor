@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import re
+from word2number import w2n
 import spacy,os
 import inflect, logging
 from functions.spending import log_spending, clear_spending_logs, show_spending_logs,spending_graph
@@ -68,11 +69,38 @@ def parse_message(message):
     transformed_text = []
     message_tag = []
     verb_count = 0
+    Num_count=0
+    Num_list=[]
 
     for token in doc:
         tokenisedword.append(token.lemma_)
         message_tag.append(token.pos_)
         
+        
+        if token.pos_ == 'NUM':
+            Num_count += 1
+            Num_list.append(token.lemma_)
+            print(f"Num_list contents before loop: {Num_list}")
+
+            for num in Num_list:
+                if isinstance(num, str):
+                    if num.isdigit():
+                        print(f"'{num}' is a numeric string, type: {type(int(num))}")
+                    else:
+                        converted_num = w2n.word_to_num(num)
+                        print(f"'{num}' is a word, converted to {converted_num}, type: {type(converted_num)}")
+                            # Replace the original string with the converted number
+                        Num_list[Num_list.index(num)] = converted_num
+            if len(Num_list) >= 2:
+                Num_list = [int(x) for x in Num_list]
+                print(Num_list[0])
+                print(Num_list[1])
+                total = Num_list[0] * Num_list[1]  # Multiply the first two numbers
+                print(f"Multiplication of {Num_list[0]} and {Num_list[1]} is: {total}")
+            else:
+                print("Not enough numbers in the list to multiply")
+       
+            
         if token.pos_ in ['ADP', 'PART']:#ex to(part) and for (adp)
             continue
         
@@ -81,9 +109,14 @@ def parse_message(message):
             if verb_count > 1:  # Skip the second verb
                 continue
         transformed_text.append(token.lemma_) 
-        print(f"tokenised and lemmatized message: {tokenisedword}")
-        print(f"message tag: {message_tag}")
-        print(f"sentence without ADP (adpositions) word: {transformed_text}")
+        
+        
+    print(f"tokenised and lemmatized message: {tokenisedword}")
+    print(f"message tag: {message_tag}")
+    print(f"sentence without ADP (adpositions) word: {transformed_text}")
+    print(f"how many numbers in the sentence : {Num_count}")
+    print(f"Numbers list  :{Num_list}")
+        
     return ' '.join(transformed_text)
 
 
@@ -142,6 +175,7 @@ def chat():
         return jsonify({'error': 'No message provided.'})
     
     transformed_text_str = parse_message(message)
+    
     if "need" in transformed_text_str.lower():
         parts = transformed_text_str.split("need")
         if len(parts) > 1:
