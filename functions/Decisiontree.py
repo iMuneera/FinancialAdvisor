@@ -32,6 +32,6 @@ def decisiontree(user_item,budget):
             
     else:
         
-        return f"No decision found for {user_item.capitalize()}." + categorize_item()
+        return f"No decision found for {user_item.capitalize()}." 
 
 
