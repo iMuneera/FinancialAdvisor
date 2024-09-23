@@ -56,7 +56,7 @@ def show_spending_logs():
 def clear_spending_logs():
     try:
         with open('txt/spending_log.txt', 'w') as file:
-            file.write('')  # Clear the file
+            file.write('') 
         return "Spending logs have been cleared."
     except Exception as e:
         return f"An error occurred while clearing the file: {str(e)}"
@@ -71,7 +71,7 @@ def log_spending(description, amount_bhd):
 
 def get_amount_class(amount_bhd):
     if amount_bhd >= 100:
-        return 'text-red-600'
+        return 'text-red-800'
     elif amount_bhd >= 10:
         return 'text-yellow-600'
     else:
@@ -85,30 +85,37 @@ def spending_graph():
 
     with open(file_path, 'r') as file:
         for line in file:
-            # Extract date and amount using regex
+            #year-month-day - Price
             match = re.match(r'(\d{4}-\d{2}-\d{2})\s.*-\s([\d.]+)\sBHD', line)
             if match:
                 date_str = match.group(1)
                 amount = float(match.group(2))
 
-                # Convert date string to datetime object
+                # date without time to map it with the day of the week 
+                 
                 date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-
-                # Get day of the week (e.g., Monday, Tuesday)
+                print(date_obj)
+                
+                # Get day of the week 
                 day_of_week = date_obj.strftime('%A')
-
-                # Sum amounts based on day of the week
+                print(day_of_week)
+                
+                # Sum amounts for each day in the week
                 daily_spending[day_of_week] += amount
+                print(daily_spending[day_of_week])
 
-    # Step 2: Create lists of days and total amounts (ensure order of days)
-    days = weekdays  # We keep this ordered for plotting
-    totals = [daily_spending[day] for day in days]
+
+
+    totals = [daily_spending[day] for day in weekdays]
+    print (totals)
+    print(weekdays)
+    print(type(weekdays))
     
     # Step 3: Color bars where spending is more than 20 BHD
     colors = ['red' if total >= 20 else 'yellow' for total in totals]
     # Step 3: Generate the graph
     plt.figure(figsize=(10, 6))
-    bars = plt.bar(days, totals, color=colors)
+    bars = plt.bar(weekdays, totals, color=colors)
 
      # Step 5: Add text (amounts) on top of each bar
     for bar, total in zip(bars, totals):
@@ -148,9 +155,9 @@ def purchase_graph():
         # Separate item names and their total prices for plotting
         item_names = list(item_totals.keys())
         prices = list(item_totals.values())
-
+        pastel_colors = [ '#baffc9', '#bae1ff', '#d4a5a5', '#a0d8a0', '#ffb3d9']
         # Plot the pie chart
-        plt.figure(figsize=(6, 6))
-        plt.pie(prices, labels=item_names, autopct='%1.2f%%', startangle=140)
-        plt.title("Spending Distribution by Item")
+        plt.figure(figsize=(10, 6))
+        plt.pie(prices, labels=item_names, colors=pastel_colors, autopct='%1.f%%', startangle=140)
+        plt.title("Personal Expense Report")
         plt.savefig('static/images/purchases.png')

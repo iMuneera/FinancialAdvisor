@@ -195,7 +195,7 @@ def chat():
         parts = transformed_text_str.split("need")
         if len(parts) > 1:
             user_item = parts[1].strip()  # Get the first word after "check"
-            response = decisiontree(user_item)  # Pass user_item to decisiontree
+            response = decisiontree(user_item,budget)  # Pass user_item to decisiontree
     elif "wishlist" in transformed_text_str.lower():
         response = display_wishlist()
     elif "want" in transformed_text_str.lower():
@@ -212,7 +212,7 @@ def chat():
         response = 'Here is your weekly spending graph.'
     elif "advice" in transformed_text_str.lower():
         response = saving_advice()
-    elif "item" in transformed_text_str.lower():
+    elif "report" in transformed_text_str.lower():
         purchase_graph()
         image_url1 = '/static/images/purchases.png'
         response = 'Here is your weekly purchases graph.'
@@ -235,6 +235,9 @@ def chat():
         'image_url': image_url,
         'image_url1': image_url1
     })
+
+
+
 
 
 if __name__ == '__main__':
