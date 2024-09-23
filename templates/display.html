@@ -5,7 +5,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gradient-to-b from-blue-200 to-blue-300 flex items-center justify-center min-h-screen">
+<body class=" bg-gradient-to-r from-indigo-100 to-sky-200 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl h-11/12 flex flex-col">
         <!-- Budget Display -->
         <div class="mb-6 text-center">
@@ -19,9 +19,12 @@
         <div class="chat-container bg-gray-50 p-6 rounded-lg shadow-inner flex-1 flex flex-col h-full w-full">
             <div id="chat-messages" class="flex-1 overflow-y-auto py-12">
                 <!-- Chatbot message (left-side) -->
+
                 <div class="chat-message text-gray-800 mb-4 flex justify-start">
-                    <div class="bg-blue-100 p-2 rounded-lg ">
-                        <p class="font-semibold">Chatbot:</p>
+                    <img id="bot-icon" src="\static\images\bot.png" class="h-14 ">
+                    <div class="m-2 bg-blue-100 p-2 rounded-lg ">
+                      
+                        <p class="font-semibold">Chatbot:</p> 
                         <p>Hi there! How can I assist you with your budget today?</p>
                     </div>
                 </div>
@@ -39,6 +42,10 @@
                 <img id="weekly-spending-graph" src="\static\images\week_spending.png">
             </div>
 
+            <div id="graph-container2" class="hidden">
+                <img id="weekly-purchases-graph" src="\static\images\purchases.png">
+            </div>
+
             <!--input filed and sent button -->
             <div class="mt-4 flex">
                 <input type="text" id="user-input"
@@ -53,8 +60,6 @@
     </div>
 
     <script>
-
-
         //taking user input and trim it and check if it greeting before sending it  to backend 
         document.getElementById('send-button').addEventListener('click', () => {
             const inputField = document.getElementById('user-input');
@@ -62,19 +67,27 @@
             if (!userInput) return;
             const chatMessages = document.getElementById('chat-messages');
 
-            //{frontend} to make the user input display in the right side and the chatbot respond in the left side 
+    // Add message function to handle both user and bot messages
             const addMessage = (text, className, alignRight = false) => {
                 const message = document.createElement('div');
                 message.className = `chat-message text-gray-800 mb-4 flex ${alignRight ? 'justify-end' : 'justify-start'}`;
+                
+                // Only add bot image if it's the bot's response (alignRight is false)
+                const botImage = alignRight ? '' : '<img id="bot-icon" src="\\static\\images\\bot.png" class="h-14 mr-2">';
+                
                 message.innerHTML = `
+                    ${botImage}
                     <div class="${className} p-2 rounded-lg max-w-xs">
                         <p class="font-semibold">${alignRight ? 'You' : 'Chatbot'}:</p>
                         <p>${text}</p>
                     </div>
                 `;
                 chatMessages.appendChild(message);
-                // chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+                // chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom if necessary
             };
+
+            inputField.value = ''; // Clear input field after sending message
+    
 
             //-------------- pick randome respond for the greeting array  -------------------// 
             const getRandomResponse = (responses) => responses[Math.floor(Math.random() * responses.length)];
@@ -130,6 +143,10 @@
                             budgetDisplay.className = `text-3xl font-bold p-4 rounded-lg text-center mt-4 ${isNegative ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
                         }
 
+
+
+
+
                         //-------------- to display the graph div for the weekly spending  -------------------//      
                         const graphContainer = document.getElementById('graph-container');
                         const graphImage = document.getElementById('weekly-spending-graph');
@@ -140,11 +157,38 @@
                         } else {
                             graphContainer.classList.add('hidden');
                         }
+
+                    
+
+
+                        //-------------- to display the graph div for the weekly spending  -------------------//      
+                        const graphContainer1 = document.getElementById('graph-container2');
+                        const graphImage1 = document.getElementById('weekly-purchases-graph');
+                        //-------------- send and receive respond and display it from backend -------------------// 
+                        if (data.image_url1) {
+                            graphImage1.src = data.image_url1;
+                            graphContainer1.classList.remove('hidden');
+                        } else {
+                            graphContainer1.classList.add('hidden');
+                        }
+
+                    
+
+
+
+
+
+
+
+
+
+
+
                     })
                     //-------------- recive error from the backend  and display it -------------------// 
                     .catch(error => console.error('Error:', error));
             }
-        });
+        })
     </script>
 
 </body>

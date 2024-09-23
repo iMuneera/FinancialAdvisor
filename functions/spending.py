@@ -3,10 +3,12 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from collections import defaultdict
 import pandas as pd
+matplotlib.use('Agg')
+
 
 def show_spending_logs():
     try:
-        with open('txt\spending_log.txt', 'r') as file:
+        with open('txt/spending_log.txt', 'r') as file:
             spending_log = file.readlines()
 
         if not spending_log:
@@ -53,7 +55,7 @@ def show_spending_logs():
 
 def clear_spending_logs():
     try:
-        with open('txt\spending_log.txt', 'w') as file:
+        with open('txt/spending_log.txt', 'w') as file:
             file.write('')  # Clear the file
         return "Spending logs have been cleared."
     except Exception as e:
@@ -62,7 +64,7 @@ def clear_spending_logs():
 def log_spending(description, amount_bhd):
     try:
         date_str = datetime.now().strftime('%Y-%m-%d %I:%M %p')
-        with open("txt\spending_log.txt", "a") as file:
+        with open("txt/spending_log.txt", "a") as file:
             file.write(f"{date_str} - {description} - {amount_bhd:.2f} BHD\n")
     except Exception as e:
         return f"An error occurred while logging the spending: {str(e)}"
@@ -76,10 +78,9 @@ def get_amount_class(amount_bhd):
         return 'text-gray-800'
 
 def spending_graph():
-    file_path = 'txt\spending_log.txt'
-   # Initialize a dictionary to hold totals for each day
-  # Initialize a dictionary with all days of the week set to zero
-    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    file_path = 'txt/spending_log.txt'
+
+    weekdays = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     daily_spending = {day: 0.0 for day in weekdays}
 
     with open(file_path, 'r') as file:
@@ -126,3 +127,30 @@ def spending_graph():
     plt.savefig('static/images/week_spending.png')
     # plt.show()
     plt.close()  # Close the plot to free up memory
+    
+def purchase_graph():
+    file_path = 'txt/spending_log.txt'
+
+    item_names = []
+    prices = []
+    item_totals = defaultdict(float)
+
+    with open(file_path, 'r') as file:
+        for line in file:
+            print(line)
+            pattern = r"-\s([a-zA-Z]+)\s-\s([\d,]+(?:\.\d{2})?)\sBHD"
+            matches = re.findall(pattern,line)
+            
+            for match in matches:
+                item_name, price = match
+                item_totals[item_name] += float(price.replace(",", ""))  # Add price to the item total
+
+        # Separate item names and their total prices for plotting
+        item_names = list(item_totals.keys())
+        prices = list(item_totals.values())
+
+        # Plot the pie chart
+        plt.figure(figsize=(6, 6))
+        plt.pie(prices, labels=item_names, autopct='%1.2f%%', startangle=140)
+        plt.title("Spending Distribution by Item")
+        plt.savefig('static/images/purchases.png')

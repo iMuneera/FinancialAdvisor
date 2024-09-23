@@ -3,7 +3,7 @@ import re
 from word2number import w2n
 import spacy,os
 import inflect, logging
-from functions.spending import log_spending, clear_spending_logs, show_spending_logs,spending_graph
+from functions.spending import log_spending, clear_spending_logs, show_spending_logs,spending_graph,purchase_graph
 from functions.wishlist import display_wishlist, wishlist
 from functions.saving import saving_advice
 from functions.Decisiontree import decisiontree
@@ -17,9 +17,13 @@ def custom_static(filename):
 
 #---------------------------------------------
 def convert_currency(amount, currency):
+    print(f"convert currrency func called line 20")
     if currency == '$':
+        print(f"usd to bhd func called line 31")
         return usd_to_bhd(amount)
+    
     elif currency == '£':
+        print(f"Eur to bhd func called line 35")
         return EUR_to_bhd(amount)
     else:
         return amount
@@ -33,9 +37,11 @@ def EUR_to_bhd(EUR_amount):
     return EUR_amount * conversion_rate
 #---------------------------------------------    
 def reset():
+    
     global budget
+    print(f"Reset budget func called  {budget} line 42")
     budget = 0
-    return "Your budget has been reset to zero", budget
+    return "Your budget has been reset to zero"
 #---------------------------------------------
 
 
@@ -55,11 +61,11 @@ def update_budget():
 
 @app.route('/')
 def display():
-    # Check if the old image exists and delete it
-    old_image = 'static/images/week_spending.png'
-    if os.path.exists(old_image):
-        os.remove(old_image)
-        print(f"Old graph {old_image} deleted.")
+    old_image = ['static/images/week_spending.png','static/images/purchases.png']
+    for image in old_image:
+        if os.path.exists(image):
+            os.remove(image)
+            print(f"Old graph {image} deleted.")
     return render_template('display.html', budget=budget)
 
 #--------------------------------------------------------------------------------------
@@ -177,6 +183,7 @@ def handle_budget_modification(transformed_text_str, amount_str, currency,descri
 @app.route('/chat', methods=['POST'])
 def chat():
     image_url = None
+    image_url1 = None
     response = ""
     message = request.form.get('message')
     if not message:
@@ -205,6 +212,10 @@ def chat():
         response = 'Here is your weekly spending graph.'
     elif "advice" in transformed_text_str.lower():
         response = saving_advice()
+    elif "item" in transformed_text_str.lower():
+        purchase_graph()
+        image_url1 = '/static/images/purchases.png'
+        response = 'Here is your weekly purchases graph.'
     elif "budget" in transformed_text_str.lower():
         if budget == 0:
             response = "zero"
@@ -221,7 +232,8 @@ def chat():
     return jsonify({
         'updated_budget': budget,
         'response': response,
-        'image_url': image_url
+        'image_url': image_url,
+        'image_url1': image_url1
     })
 
 
