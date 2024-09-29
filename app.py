@@ -186,16 +186,18 @@ def chat():
     image_url1 = None
     response = ""
     message = request.form.get('message')
+    
     if not message:
         return jsonify({'error': 'No message provided.'})
 
     transformed_text_str, amount_str, currency, description = parse_message(message)
 
+    # Handling different phrases in the message
     if "need" in transformed_text_str.lower():
         parts = transformed_text_str.split("need")
         if len(parts) > 1:
-            user_item = parts[1].strip()  # Get the first word after "check"
-            response = decisiontree(user_item,budget)  # Pass user_item to decisiontree
+            user_item = parts[1].strip()  # Get the first word after "need"
+            response = decisiontree(user_item, budget)  # Pass user_item to decisiontree
     elif "wishlist" in transformed_text_str.lower():
         response = display_wishlist()
     elif "want" in transformed_text_str.lower():
@@ -217,14 +219,12 @@ def chat():
         image_url1 = '/static/images/purchases.png'
         response = 'Here is your weekly purchases graph.'
     elif "budget" in transformed_text_str.lower():
-        if budget == 0:
-            response = "zero"
-        else:
-            response = budget
-
-
+        response = f"Your current budget is {budget}." if budget != 0 else "Your budget is zero."
     if not response:
-        response = handle_budget_modification(transformed_text_str.replace(amount_str, ''), amount_str, currency,description)
+        response = handle_budget_modification(transformed_text_str.replace(amount_str, ''), amount_str, currency, description)
+
+
+    response = response if response else "Sorry, I don't understand."
 
     if isinstance(response, dict):
         return jsonify(response)
@@ -235,7 +235,6 @@ def chat():
         'image_url': image_url,
         'image_url1': image_url1
     })
-
 
 
 
