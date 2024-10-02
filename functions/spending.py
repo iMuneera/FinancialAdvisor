@@ -79,14 +79,39 @@ def get_amount_class(amount_bhd):
 
 def spending_graph():
     file_path = 'txt/spending_log.txt'
-
+    date_format = "%Y-%m-%d"
     weekdays = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     daily_spending = {day: 0.0 for day in weekdays}
 
     with open(file_path, 'r') as file:
-        for line in file:
+        lines = file.readlines()  # Read all lines into a list
+        if lines:
+            last_line=lines[-1].strip()  # Check if the file is not empty
+            match = re.match(r'(\d{4}-\d{2}-\d{2})\s.*-\s([\d.]+)\sBHD', last_line)
+            if match:
+                date_str = match.group(1)  # Extract the date string from the match
+                
+            print(f"Extracted date: {date_str}")
+            
+            print(type(date_str))
+            print(f"Last date from file: {date_str}")
+            lastdate_obj = datetime.strptime(date_str, date_format)
+            week1 = lastdate_obj.isocalendar()[1]
+            print(f"Last date (datetime object): {lastdate_obj}, Week: {week1}")
+            todayis = datetime.now().strftime('%Y-%m-%d')
+            print(f"Today's date: {todayis}")
+            today_obj = datetime.strptime(todayis, date_format)
+            week2 = today_obj.isocalendar()[1]
+            if week1 == week2:
+                print("The dates are in the same week.")
+            else:
+                print("The dates are not in the same week.")
+           
+            
+        for line in lines:
             #year-month-day - Price
             match = re.match(r'(\d{4}-\d{2}-\d{2})\s.*-\s([\d.]+)\sBHD', line)
+           
             if match:
                 date_str = match.group(1)
                 amount = float(match.group(2))
