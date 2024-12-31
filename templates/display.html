@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot - Display Budget</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@2.x.x/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="dark:bg-gray-900 flex items-center justify-center min-h-screen bg-gray-300">
+
+    <div id="container" class="dark:bg-gray-700 p-8 rounded-lg shadow-2xl w-full max-w-5xl min-h-screen flex flex-col my-12 bg-gray-400">
+        <div class="flex justify-end mb-4">
+            <nav x-data="{ open: false }">
+                <button id="toggle-button" class="text-gray-500 w-10 h-10 relative focus:outline-none" @click="open = !open">
+                    <div class="block w-5 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'rotate-45': open,' -translate-y-1.5': !open }"></span>
+                        <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'opacity-0': open }"></span>
+                        <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'-rotate-45': open, ' translate-y-1.5': !open}"></span>
+                    </div>
+                </button>
+            </nav>
+        </div>
+
+        <div class="flex-grow flex">
+            <!-- Left Side List -->
+            <div id="items-list" class="w-1/3 dark:bg-gray-800 p-6 rounded-lg shadow-inner bg-gray-200">
+                <p class="text-xl font-sans text-gray-600 mb-4 dark:text-gray-200">Functions List</p>
+                <div class="space-y-3">
+                    <div>
+                        <li class="dark:hover:bg-gray-600 p-3 rounded-lg cursor-pointer  dark:text-gray-500 dark:hover:text-white " onclick="toggleList('spendings-list')">Spendings</li>
+                        <div id="spendings-list" class="hidden">
+                            <ul class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                <li class="dark:text-white pb-2 text-gray-600">show me my spending log</li>
+                                <li class="dark:text-white pb-2 text-gray-600">i bought a bag for 34$</li>
+                                <li class="dark:text-white pb-2 text-gray-600">show me my (spending/purchases)graph</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <li class="dark:hover:bg-gray-600 p-3 rounded-lg cursor-pointer  dark:text-gray-500 dark:hover:text-white " onclick="toggleList('decision-list')">Decision Making</li>
+                        <div id="decision-list" class="hidden">
+                            <ul class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                <li class="dark:text-white pb-2 text-gray-600" >Do I need a bag</li>
+                                <li class="dark:text-white pb-2 text-gray-600" >why?</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <li class="dark:hover:bg-gray-600 p-3 rounded-lg cursor-pointer dark:text-gray-500 dark:hover:text-white" onclick="toggleList('saving-list')">Saving Advice</li>
+                        <div id="saving-list" class="hidden">
+                            <ul class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                <li class="dark:text-white pb-2 text-gray-600" > give me advice </li>
+                             
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <li class="dark:hover:bg-gray-600 p-3 rounded-lg cursor-pointer    dark:text-gray-500 dark:hover:text-white " onclick="toggleList('subscription-list')">Subscription</li>
+                        <div id="subscription-list" class="hidden">
+                            <ul class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                <li  class="dark:text-white pb-2 text-gray-600" >show me my subscriptions</li>
+                                <li  class="dark:text-white pb-2 text-gray-600"  >i subscribed to netflix for 15.49$ </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <li class="dark:hover:bg-gray-600 p-3 rounded-lg cursor-pointer   dark:text-gray-500  dark:hover:text-white" onclick="toggleList('wishlist-list')">Wishlist</li>
+                        <div id="wishlist-list" class="hidden">
+                            <ul class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                <li  class="dark:text-white pb-2 text-gray-600"  > show me my My wishlist</li>
+                                <li   class="dark:text-white pb-2 text-gray-600"  >i want new bag</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Chat Interface -->
+            <div id="chat-container" class="w-3/4 rounded-lg shadow-inner ml-4 flex flex-col dark:bg-gray-800 bg-gray-300">
+                <div class="my-6 text-center">
+                    <p id="budget-display" class="text-3xl font-semibold rounded-lg text-center dark:text-white">
+                        {{ budget }} BHD
+                    </p>
+                </div>
+
+                <!-- Chat Container -->
+                <div class="chat-container flex-1 flex flex-col overflow-auto w-full bg-gray-200">
+                    <div id="chat-messages" class="flex-1 overflow-y-auto py-12 dark:bg-gray-900">
+                        <!-- Chatbot message (left-side) -->
+                        <div class="flex flex-col mb-4">
+                            <div class="chat-message text-white mb-4 flex justify-start">
+                                <img id="bot-icon" src="/static/images/bot.png" class="h-14 mt-4">
+                                <div class="m-2 dark:bg-blue-500 p-3 rounded-br-3xl rounded-tr-3xl rounded-tl-xl max-w-xs text-gray-500 bg-blue-200">
+                                    <p class="text-xl font-sans font-semibold dark:text-white">Hi there! How can I assist you with your budget today?</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User message (right-side) -->
+                        <div class="flex flex-col items-end mb-4 px-4">
+                            <div class="chat-message text-gray-800 flex">
+                             
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Display Weekly Spending Graph -->
+                    <div id="graph-container" class="hidden mt-4 flex justify-center">
+                        <img id="weekly-spending-graph" src="/static/images/week_spending.png" class="h-auto rounded-lg shadow-md">
+                    </div>
+
+                    <div id="graph-container2" class="hidden mt-4 flex justify-center">
+                        <img id="weekly-purchases-graph" src="/static/images/purchases.png" class="h-auto rounded-lg shadow-md">
+                    </div>
+
+                    <!-- Input field and send button -->
+                    <div class="flex px-2 py-2 dark:bg-gray-900">
+                        <input type="text" id="user-input" class="flex-1 p-3 border border-blue-900 rounded-l-lg focus:outline-none dark:bg-gray-700 dark:text-white focus:border-blue-500 px-4 bg-gray-200" placeholder="Type your message...">
+                        <button id="send-button" class="dark:bg-blue-700 dark:text-white p-3 rounded-r-lg hover:bg-blue-600 transition duration-200 bg-blue-500">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

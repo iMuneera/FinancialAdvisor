@@ -1,0 +1,15 @@
+rent - important
+bills - important
+coffee - not important
+subscriptions - not important
+groceries - important
+car insurance - important
+healthcare - important
+electricity - important
+internet - important
+gym membership - not important
+books - not important
+phone bill - important
+pet care - important
+bag - not important
+novel- not important
